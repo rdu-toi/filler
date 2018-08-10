@@ -13,7 +13,7 @@
 #include "filler.h"
 #include <stdio.h>
 
-void	gnl(t_map *m, t_player *p)
+void	gnl(t_map *m, t_player *p, t_token *t)
 {
 	char		*line;
 	int			lines;
@@ -30,7 +30,7 @@ void	gnl(t_map *m, t_player *p)
 		write(2, "\n", 1);
 		ft_putchar_fd(p->p2, 2);
 		write(2, "\n", 1);
-		gnl(m, p);
+		gnl(m, p, t);
 	}
 	else if (!ft_strncmp(line, "Plateau", 7))
 	{
@@ -38,7 +38,7 @@ void	gnl(t_map *m, t_player *p)
 		m->mx = ft_atoi(ft_strchr(ft_strchr(line, ' ') + 1, ' '));
 		fprintf(stderr, RED "m->my = %d\n" RESET, m->my);
 		fprintf(stderr, RED "m->mx = %d\n" RESET, m->mx);
-		gnl(m, p);
+		gnl(m, p, t);
 	}
 	else if (!ft_strncmp(line, "    0", 5))
 	{
@@ -48,13 +48,8 @@ void	gnl(t_map *m, t_player *p)
 		fprintf(stderr, BLU "m->mx = %d\n" RESET, m->mx);
 		while (lines < m->my)
 		{
-			ft_putstr_fd(MAG "", 2);
-			ft_putnbr_fd(lines, 2);
-			//m.m[lines] = ft_strnew((size_t)m.mx);
 			get_next_line(0, &line);
-			//ft_strcpy(m.m[lines], (line + 4));
-			m->m[lines] = ft_strdup(line + 4);
-			lines++;
+			m->m[lines++] = ft_strdup(line + 4);
 		}
 		lines = 0;
 		while (m->m[lines])
@@ -65,7 +60,32 @@ void	gnl(t_map *m, t_player *p)
 			write(2, "\n", 1);
 			ft_putstr_fd(RESET "", 2);
 		}
+		gnl(m, p, t);
 	}
+	else if (!ft_strncmp(line, "Piece", 5))
+	{
+		t->ty = ft_atoi(ft_strchr(line, ' '));
+		t->tx = ft_atoi(ft_strchr(ft_strchr(line, ' ') + 1, ' '));
+		t->t = (char **)malloc(sizeof(char *) * t->ty);
+		t->t[t->ty] = NULL;
+		fprintf(stderr, CYN "t->ty = %d\n" RESET, t->ty);
+		fprintf(stderr, CYN "t->tx = %d\n" RESET, t->tx);
+		while (lines < t->ty)
+		{
+			get_next_line(0, &line);
+			t->t[lines++] = ft_strdup(line);
+		}
+		lines = 0;
+		while (t->t[lines])
+		{
+			ft_putstr_fd(YEL "", 2);
+			ft_putnbr_fd(lines, 2);
+			ft_putstr_fd(t->t[lines++], 2);
+			write(2, "\n", 1);
+			ft_putstr_fd(RESET "", 2);
+		}
+	}
+	write(2, "END\n", 4);
 }
 
 int		main(void)
@@ -73,7 +93,17 @@ int		main(void)
 
 	t_map		m;
 	t_player	p;
-	//t_token		t;
-	gnl(m, p);
+	t_token		t;
+	while (1)
+	{
+		gnl(&m, &p, &t);
+		free(m.m);
+		free(t.t);
+		write(1, "8 2\n", 4);
+		// gnl(&m, &p, &t);
+		// free(m.m);
+		// free(t.t);
+		// write(1, "8 3\n", 4);
+	}
 	return (0);
 }
