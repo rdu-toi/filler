@@ -34,6 +34,10 @@ typedef struct 	s_token
 	char		**t;
 	int			tx;
 	int			ty;
+	int			up;
+	int			down;
+	int			left;
+	int			right;
 }				t_token;
 
 typedef struct 	s_player
@@ -41,5 +45,10 @@ typedef struct 	s_player
 	char		p1;
 	char		p2;
 }				t_player;
+
+typedef struct 
+{
+	
+};
 
 #endif

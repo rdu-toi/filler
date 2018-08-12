@@ -13,79 +13,93 @@
 #include "filler.h"
 #include <stdio.h>
 
-void	gnl(t_map *m, t_player *p, t_token *t)
+void	token_params(t_token *t, t_map *m)
 {
-	char		*line;
+	t.up = 0;
+	t.down = 0;
+	t.left = 0;
+	t.right = 0;
+}
+
+void	store_map(t_map *m, char **line)
+{
+	int		lines;
+	int		num = 10;
+
+	lines = 0;
+
+	m->m = (char **)malloc(sizeof(char *) * m->my + 1);
+	m->m[m->my] = NULL;
+	while (lines < m->my)
+	{
+		get_next_line(0, line);
+		m->m[lines++] = ft_strdup(*line + 4);
+	}
+	lines = 0;
+	while (m->m[lines])
+	{
+		fprintf(stderr, YEL "%d%s\n" RESET, num++, m->m[lines++]);
+		fflush(stdout);
+	}
+	get_next_line(0, line);
+	fflush(stdout);
+}
+
+void	store_token(t_token *t, char **line)
+{
+	int		lines;
+	int		num = 10;
+
+	lines = 0;
+	t->ty = ft_atoi(ft_strchr(*line, ' '));
+	t->tx = ft_atoi(ft_strchr(ft_strchr(*line, ' ') + 1, ' '));
+	t->t = (char **)malloc(sizeof(char *) * t->ty + 1);
+	t->t[t->ty] = NULL;
+	fprintf(stderr, GRN "t->ty: %d\nt->tx: %d\n" RESET, t->ty, t->tx);
+	fflush(stdout);
+	while (lines < t->ty)
+	{
+		get_next_line(0, line);
+		t->t[lines++] = ft_strdup(*line);
+	}
+	lines = 0;
+	while (t->t[lines])
+	{
+		fprintf(stderr, YEL "%d%s\n" RESET, num++, t->t[lines++]);
+		fflush(stdout);
+	}
+}
+
+void	store(t_map *m, t_player *p, t_token *t, char **line)
+{
 	int			lines;
 
 	lines = 0;
-	get_next_line(0, &line);
-	fprintf(stderr, GRN "%s" RESET, line);
-	write(2, "\n", 1);
-	if (!ft_strncmp(line, "$$$", 3))
+	fprintf(stderr, RED "First line: %s\n" RESET, *line);
+	fflush(stdout);
+	if (!ft_strncmp(*line, "$$$", 3))
 	{
-		p->p1 = (line[10] == '1' ? 'O' : 'X');
+		fprintf(stderr, "%s\n", *line + 10);
+		p->p1 = *(*line + 10) == '1' ? 'O' : 'X';
 		p->p2 = (p->p1 == 'O' ? 'X' : 'O');
-		ft_putchar_fd(p->p1, 2);
-		write(2, "\n", 1);
-		ft_putchar_fd(p->p2, 2);
-		write(2, "\n", 1);
-		gnl(m, p, t);
+		fprintf(stderr, GRN "p->p1: %c\np->p2: %c\n" RESET, p->p1, p->p2);
+		fflush(stdout);
+		get_next_line(0, line);
 	}
-	else if (!ft_strncmp(line, "Plateau", 7))
+	if (!ft_strncmp(*line, "Plateau", 7))
 	{
-		m->my = ft_atoi(ft_strchr(line, ' '));
-		m->mx = ft_atoi(ft_strchr(ft_strchr(line, ' ') + 1, ' '));
-		fprintf(stderr, RED "m->my = %d\n" RESET, m->my);
-		fprintf(stderr, RED "m->mx = %d\n" RESET, m->mx);
-		gnl(m, p, t);
+		m->my = ft_atoi(ft_strchr(*line, ' '));
+		m->mx = ft_atoi(ft_strchr(*line, ' '));
+		fprintf(stderr, GRN "m->my: %d\nm->mx: %d\n" RESET, m->my, m->mx);
+		fflush(stdout);
+		get_next_line(0, line);
 	}
-	else if (!ft_strncmp(line, "    0", 5))
-	{
-		m->m = (char **)malloc(sizeof(char *) * m->my);
-		m->m[m->my] = NULL;
-		fprintf(stderr, BLU "m->my = %d\n" RESET, m->my);
-		fprintf(stderr, BLU "m->mx = %d\n" RESET, m->mx);
-		while (lines < m->my)
-		{
-			get_next_line(0, &line);
-			m->m[lines++] = ft_strdup(line + 4);
-		}
-		lines = 0;
-		while (m->m[lines])
-		{
-			ft_putstr_fd(YEL "", 2);
-			ft_putnbr_fd(lines, 2);
-			ft_putstr_fd(m->m[lines++], 2);
-			write(2, "\n", 1);
-			ft_putstr_fd(RESET "", 2);
-		}
-		gnl(m, p, t);
-	}
-	else if (!ft_strncmp(line, "Piece", 5))
-	{
-		t->ty = ft_atoi(ft_strchr(line, ' '));
-		t->tx = ft_atoi(ft_strchr(ft_strchr(line, ' ') + 1, ' '));
-		t->t = (char **)malloc(sizeof(char *) * t->ty);
-		t->t[t->ty] = NULL;
-		fprintf(stderr, CYN "t->ty = %d\n" RESET, t->ty);
-		fprintf(stderr, CYN "t->tx = %d\n" RESET, t->tx);
-		while (lines < t->ty)
-		{
-			get_next_line(0, &line);
-			t->t[lines++] = ft_strdup(line);
-		}
-		lines = 0;
-		while (t->t[lines])
-		{
-			ft_putstr_fd(YEL "", 2);
-			ft_putnbr_fd(lines, 2);
-			ft_putstr_fd(t->t[lines++], 2);
-			write(2, "\n", 1);
-			ft_putstr_fd(RESET "", 2);
-		}
-	}
-	write(2, "END\n", 4);
+	if (!ft_strncmp(*line, "    0", 5))
+		store_map(m, line);
+	if (!ft_strncmp(*line, "Piece", 5))
+		store_token(t, line);
+	fprintf(stderr, RED "End of storing\n" RESET);
+	fflush(stdout);
 }
 
 int		main(void)
@@ -94,16 +108,20 @@ int		main(void)
 	t_map		m;
 	t_player	p;
 	t_token		t;
+	char		*line;
 	while (1)
 	{
-		gnl(&m, &p, &t);
-		free(m.m);
-		free(t.t);
+		get_next_line(0, &line);
+		store(&m, &p, &t, &line);
+		fprintf(stderr, RED "Last line: %s\n" RESET, line);
+		fflush(stdout);
 		write(1, "8 2\n", 4);
-		// gnl(&m, &p, &t);
-		// free(m.m);
-		// free(t.t);
-		// write(1, "8 3\n", 4);
+		if (m.m && t.t)
+		{
+			free(m.m);
+			free(t.t);
+		}
+		free(line);
 	}
 	return (0);
 }
