@@ -1,1 +1,3 @@
-seed = 3436
+seed = 7779
+O: error on input
+../srcs/test.filler: Segfault at 0

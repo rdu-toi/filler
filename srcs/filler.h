@@ -42,6 +42,7 @@ typedef struct 	s_player
 {
 	char		p1;
 	char		p2;
+	int			pos[2];
 }				t_player;
 
 #endif

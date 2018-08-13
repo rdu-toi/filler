@@ -20,22 +20,82 @@ void	error(int x)
 	ft_putchar_fd('\n', 2);
 }
 
-int		*placement(t_map *m, t_token *t, t_player *p, int *pos, int mi, int mj, int ti, int tj, int i, int j)
+void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 {
-	while (mi < m->mx)
+	int		w;
+
+	w = 0;
+	while (t->top[1] + i <= t->bottom[1])
 	{
-		mj = 0;
-		while (mj < m->my)
+		error('3');
+		j = 0;
+		while (t->top[0] + j <= t->bottom[0])
 		{
+			error('4');
+			if (m->m[mi + i][mj + j] == p->p2 || w > 1)
+			{
+				w = 0;
+				break;
+			}
+			error('5');
+			if (t->t[t->top[1] + i][t->top[0] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
+				w++;
+			j++;
+			error('6');
+		}
+		i++;
+		error('7');
+	}
+	if (w == 1)
+	{
+		error('8');
+		p->pos[0] = mi - t->top[1];
+		p->pos[1] = mj - t->top[0];
+	}
+}
+
+void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
+{
+	while (mi + t->bottom[1] <= m->my)
+	{
+		error('1');
+		mj = 0;
+		while (mj + t->bottom[0] <= m->mx)
+		{
+			error('2');
+			placement2(m, t, p, mi, mj, i, j);
+			mj++;
+		}
+		mi++;
+	}
+}
+
+/*void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int ti, int tj, int i, int j)
+{
+	error(1);
+	int		w;
+	int		done;
+
+	done = 0;
+	w = 0;
+	while (mi < m->mx && !done)
+	{
+		error(2);
+		mj = 0;
+		while (mj < m->my && !done)
+		{
+			error(3);
 			ti = t->top[1];
 			i = 0;
-			while (ti <= t->bottom[1])
+			while (ti <= t->bottom[1] && !done)
 			{
+				error(4);
 				j = 0;
 				tj = t->top[0];
-				while (tj <= bottom[0])
+				while (tj <= t->bottom[0] && !done)
 				{
-					if (mj + j == m->my || mi + i == m->mx)
+					error(5);
+					if (mj + j >= m->my || mi + i >= m->mx)
 					{
 						w = 0;
 						break;
@@ -51,22 +111,25 @@ int		*placement(t_map *m, t_token *t, t_player *p, int *pos, int mi, int mj, int
 					tj++;
 				}
 				if (w == 1)
-					return (pos);
+				{
+					p->pos[0] = (mj - j) - tj;
+					p->pos[1] = (mi - i) - ti;
+					done = 1;
+				}
 				i++;
 				ti++;
 			}
 			mj++;
+			w = 0;
 		}
 		mi++;
 	}
-}
+}*/
 
-int		*token_placement(t_map *m, t_token *t, t_player *p)
+void	token_placement(t_map *m, t_token *t, t_player *p)
 {
 	int		mi;
 	int		mj;
-	int		ti;
-	int		tj;
 	int		i;
 	int		j;
 
@@ -74,9 +137,7 @@ int		*token_placement(t_map *m, t_token *t, t_player *p)
 	mj = 0;
 	i = 0;
 	j = 0;
-	ti = t->top[1];
-	tj = t->top[0];
-	return (placement(m, t, p, mi, mj, ti, tj, i, j))
+	placement(m, t, p, mi, mj, i, j);
 }
 
 void	find_params(t_token *t, int i, int j, int first)
@@ -200,7 +261,7 @@ void	store(t_map *m, t_player *p, t_token *t, char **line)
 	if (!ft_strncmp(*line, "Plateau", 7))
 	{
 		m->my = ft_atoi(ft_strchr(*line, ' '));
-		m->mx = ft_atoi(ft_strchr(*line, ' '));
+		m->mx = ft_atoi(ft_strrchr(*line, ' '));
 		fprintf(stderr, GRN "m->my: %d\nm->mx: %d\n" RESET, m->my, m->mx);
 		fflush(stdout);
 		get_next_line(0, line);
@@ -225,14 +286,19 @@ int		main(void)
 	{
 		if (get_next_line(0, &line) > 0)
 		{
+			p.pos[0] = 0;
+			p.pos[1] = 0;
 			fprintf(stderr, BLU "BEGINNING!\n" RESET);
 			fflush(stdout);
 			store(&m, &p, &t, &line);
 			token_params(&t);
+			token_placement(&m, &t, &p);
+			ft_putnbr_fd(p.pos[0], 2);
+			ft_putnbr_fd(p.pos[1], 2);
 			fprintf(stderr, BLU "ENDING!\n" RESET);
 			fflush(stdout);
 		}
-		write(1, "8 2\n", 4);
+		//write(1, "8 2\n", 4);
 		if (m.m && t.t)
 		{
 			free(m.m);
