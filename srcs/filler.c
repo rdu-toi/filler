@@ -13,38 +13,104 @@
 #include "filler.h"
 #include <stdio.h>
 
+void	error(int x)
+{
+	ft_putstr_fd("Error ", 2);
+	ft_putnbr_fd(x, 2);
+	ft_putchar_fd('\n', 2);
+}
+
+int		*placement(t_map *m, t_token *t, t_player *p, int *pos, int mi, int mj, int ti, int tj, int i, int j)
+{
+	while (mi < m->mx)
+	{
+		mj = 0;
+		while (mj < m->my)
+		{
+			ti = t->top[1];
+			i = 0;
+			while (ti <= t->bottom[1])
+			{
+				j = 0;
+				tj = t->top[0];
+				while (tj <= bottom[0])
+				{
+					if (mj + j == m->my || mi + i == m->mx)
+					{
+						w = 0;
+						break;
+					}
+					if (m->m[mi + i][mj + j] == p->p2)
+					{
+						w = 0;
+						break;
+					}
+					if (t->t[ti][tj] == '*' && m->m[mi + i][mj + j] == p->p1)
+						w++;
+					j++;
+					tj++;
+				}
+				if (w == 1)
+					return (pos);
+				i++;
+				ti++;
+			}
+			mj++;
+		}
+		mi++;
+	}
+}
+
+int		*token_placement(t_map *m, t_token *t, t_player *p)
+{
+	int		mi;
+	int		mj;
+	int		ti;
+	int		tj;
+	int		i;
+	int		j;
+
+	mi = 0;
+	mj = 0;
+	i = 0;
+	j = 0;
+	ti = t->top[1];
+	tj = t->top[0];
+	return (placement(m, t, p, mi, mj, ti, tj, i, j))
+}
+
 void	find_params(t_token *t, int i, int j, int first)
 {
+	fprintf(stderr, MAG "Find_params function open!\n" RESET);
+	fflush(stdout);
 	while (i < t->ty)
 	{
 		j = 0;
 		while (j < t->tx)
 		{
-			// if (ft_strchr(t->t[i], '*') && !first)
-			// {
-			// 	t->up = i;
-			// 	t->left = i;
-			// 	first = 1;
-			// }
-			// if (t->t[i][j] == '*' && t->down < i)
-			// 	t->down = i;
-			// if (t->t[i][j] == '*' && t->left > j)
-			// 	t->left = j;
-			// if (t->t[i][j] == '*' && t->right < j)
-			// 	t->right = j;
-			// fprintf(stderr, "%ce", t->t[i][j]);
-			// fflush(stdout);
+			if (t->t[i][j] == '*' && !first)
+			{
+				t->top[0] = i;
+				first = 1;
+			}
+			if (t->t[i][j] == '*' && t->bottom[0] < i)
+				t->bottom[0] = i;
+			if (t->t[i][j] == '*' && t->top[1] > j)
+				t->top[1] = j;
+			if (t->t[i][j] == '*' && t->bottom[1] < j)
+				t->bottom[1] = j;
 			j++;
-			first++;
 		}
-		fprintf(stderr, "\n");
-		fflush(stdout);
 		i++;
 	}
+	fprintf(stderr, RED "Find_params function close!\n" RESET);
+	fflush(stdout);
 }
 
 void	token_params(t_token *t)
 {
+	fprintf(stderr, MAG "Token_params function open!\n" RESET);
+	fflush(stdout);
 	int		i;
 	int		j;
 	int		first;
@@ -52,16 +118,20 @@ void	token_params(t_token *t)
 	i = 0;
 	j = 0;
 	first = 0;
-	t->up = 0;
-	t->down = 0;
-	t->left = 0;
-	t->right = 0;
+	t->top[0] = 0;
+	t->top[1] = t->tx;
+	t->bottom[0] = 0;
+	t->bottom[1] = 0;
 	find_params(t, i, j, first);
-	fprintf(stderr, MAG "t->up: %d\nt->left: %d\nt->right: %d\nt->down: %d\n", t->up, t->left, t->right, t->down);
+	fprintf(stderr, GRN "t->top: %d, %d\nt->bottom: %d, %d\n" RESET, t->top[0], t->top[1], t->bottom[0], t->bottom[1]);
+	fprintf(stderr, RED "Token_params function close!\n" RESET);
+	fflush(stdout);
 }
 
 void	store_map(t_map *m, char **line)
 {
+	fprintf(stderr, MAG "Store_map function open!\n" RESET);
+	fflush(stdout);
 	int		lines;
 	int		num = 10;
 
@@ -82,10 +152,14 @@ void	store_map(t_map *m, char **line)
 	}
 	get_next_line(0, line);
 	fflush(stdout);
+	fprintf(stderr, RED "Store_map function close!\n" RESET);
+	fflush(stdout);
 }
 
 void	store_token(t_token *t, char **line)
 {
+	fprintf(stderr, MAG "Store_token function open!\n" RESET);
+	fflush(stdout);
 	int		lines;
 	int		num = 10;
 
@@ -107,17 +181,16 @@ void	store_token(t_token *t, char **line)
 		fprintf(stderr, YEL "%d%s\n" RESET, num++, t->t[lines++]);
 		fflush(stdout);
 	}
-	// fprintf(stderr, YEL "%d%c\n" RESET, num++, t->t[0][0]);
-	// fflush(stdout);
+	fprintf(stderr, RED "Store_token function close!\n" RESET);
+	fflush(stdout);
 }
 
 void	store(t_map *m, t_player *p, t_token *t, char **line)
 {
-	fprintf(stderr, RED "First line: %s\n" RESET, *line);
+	fprintf(stderr, MAG "Store function open!\n" RESET);
 	fflush(stdout);
 	if (!ft_strncmp(*line, "$$$", 3))
 	{
-		fprintf(stderr, "%s\n", *line + 10);
 		p->p1 = *(*line + 10) == '1' ? 'O' : 'X';
 		p->p2 = (p->p1 == 'O' ? 'X' : 'O');
 		fprintf(stderr, GRN "p->p1: %c\np->p2: %c\n" RESET, p->p1, p->p2);
@@ -136,9 +209,9 @@ void	store(t_map *m, t_player *p, t_token *t, char **line)
 		store_map(m, line);
 	if (!ft_strncmp(*line, "Piece", 5))
 		store_token(t, line);
-	fprintf(stderr, "%chere\n", t->t[0][0]);
-	fflush(stdout);
 	fprintf(stderr, RED "End of storing\n" RESET);
+	fflush(stdout);
+	fprintf(stderr, RED "Store function close!\n" RESET);
 	fflush(stdout);
 }
 
@@ -150,13 +223,15 @@ int		main(void)
 	char		*line;
 	while (1)
 	{
-		get_next_line(0, &line);
-		store(&m, &p, &t, &line);
-		token_params(&t);
-		// fprintf(stderr, "%se", m.m[0]);
-		// fflush(stdout);
-		fprintf(stderr, RED "Last line: %s\n" RESET, line);
-		fflush(stdout);
+		if (get_next_line(0, &line) > 0)
+		{
+			fprintf(stderr, BLU "BEGINNING!\n" RESET);
+			fflush(stdout);
+			store(&m, &p, &t, &line);
+			token_params(&t);
+			fprintf(stderr, BLU "ENDING!\n" RESET);
+			fflush(stdout);
+		}
 		write(1, "8 2\n", 4);
 		if (m.m && t.t)
 		{
