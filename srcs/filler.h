@@ -46,9 +46,4 @@ typedef struct 	s_player
 	char		p2;
 }				t_player;
 
-typedef struct 
-{
-	
-};
-
 #endif

@@ -13,12 +13,51 @@
 #include "filler.h"
 #include <stdio.h>
 
-void	token_params(t_token *t, t_map *m)
+void	find_params(t_token *t, int i, int j, int first)
 {
-	t.up = 0;
-	t.down = 0;
-	t.left = 0;
-	t.right = 0;
+	while (i < t->ty)
+	{
+		j = 0;
+		while (j < t->tx)
+		{
+			// if (ft_strchr(t->t[i], '*') && !first)
+			// {
+			// 	t->up = i;
+			// 	t->left = i;
+			// 	first = 1;
+			// }
+			// if (t->t[i][j] == '*' && t->down < i)
+			// 	t->down = i;
+			// if (t->t[i][j] == '*' && t->left > j)
+			// 	t->left = j;
+			// if (t->t[i][j] == '*' && t->right < j)
+			// 	t->right = j;
+			// fprintf(stderr, "%ce", t->t[i][j]);
+			// fflush(stdout);
+			j++;
+			first++;
+		}
+		fprintf(stderr, "\n");
+		fflush(stdout);
+		i++;
+	}
+}
+
+void	token_params(t_token *t)
+{
+	int		i;
+	int		j;
+	int		first;
+
+	i = 0;
+	j = 0;
+	first = 0;
+	t->up = 0;
+	t->down = 0;
+	t->left = 0;
+	t->right = 0;
+	find_params(t, i, j, first);
+	fprintf(stderr, MAG "t->up: %d\nt->left: %d\nt->right: %d\nt->down: %d\n", t->up, t->left, t->right, t->down);
 }
 
 void	store_map(t_map *m, char **line)
@@ -68,13 +107,12 @@ void	store_token(t_token *t, char **line)
 		fprintf(stderr, YEL "%d%s\n" RESET, num++, t->t[lines++]);
 		fflush(stdout);
 	}
+	// fprintf(stderr, YEL "%d%c\n" RESET, num++, t->t[0][0]);
+	// fflush(stdout);
 }
 
 void	store(t_map *m, t_player *p, t_token *t, char **line)
 {
-	int			lines;
-
-	lines = 0;
 	fprintf(stderr, RED "First line: %s\n" RESET, *line);
 	fflush(stdout);
 	if (!ft_strncmp(*line, "$$$", 3))
@@ -98,13 +136,14 @@ void	store(t_map *m, t_player *p, t_token *t, char **line)
 		store_map(m, line);
 	if (!ft_strncmp(*line, "Piece", 5))
 		store_token(t, line);
+	fprintf(stderr, "%chere\n", t->t[0][0]);
+	fflush(stdout);
 	fprintf(stderr, RED "End of storing\n" RESET);
 	fflush(stdout);
 }
 
 int		main(void)
 {
-
 	t_map		m;
 	t_player	p;
 	t_token		t;
@@ -113,6 +152,9 @@ int		main(void)
 	{
 		get_next_line(0, &line);
 		store(&m, &p, &t, &line);
+		token_params(&t);
+		// fprintf(stderr, "%se", m.m[0]);
+		// fflush(stdout);
 		fprintf(stderr, RED "Last line: %s\n" RESET, line);
 		fflush(stdout);
 		write(1, "8 2\n", 4);
@@ -123,5 +165,4 @@ int		main(void)
 		}
 		free(line);
 	}
-	return (0);
 }
