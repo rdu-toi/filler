@@ -27,28 +27,28 @@ void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 	w = 0;
 	while (t->top[1] + i <= t->bottom[1])
 	{
-		error('3');
+		error(3);
 		j = 0;
 		while (t->top[0] + j <= t->bottom[0])
 		{
-			error('4');
+			error(4);
 			if (m->m[mi + i][mj + j] == p->p2 || w > 1)
 			{
 				w = 0;
 				break;
 			}
-			error('5');
+			error(5);
 			if (t->t[t->top[1] + i][t->top[0] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
 				w++;
 			j++;
-			error('6');
+			error(6);
 		}
 		i++;
-		error('7');
+		error(7);
 	}
 	if (w == 1)
 	{
-		error('8');
+		error(8);
 		p->pos[0] = mi - t->top[1];
 		p->pos[1] = mj - t->top[0];
 	}
@@ -58,11 +58,11 @@ void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 {
 	while (mi + t->bottom[1] <= m->my)
 	{
-		error('1');
+		error(1);
 		mj = 0;
 		while (mj + t->bottom[0] <= m->mx)
 		{
-			error('2');
+			error(2);
 			placement2(m, t, p, mi, mj, i, j);
 			mj++;
 		}
