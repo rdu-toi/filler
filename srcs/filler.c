@@ -25,30 +25,34 @@ void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 	int		w;
 
 	w = 0;
-	while (t->top[1] + i <= t->bottom[1])
+	while (t->top[0] + i <= t->bottom[0])
 	{
 		error(3);
 		j = 0;
-		while (t->top[0] + j <= t->bottom[0])
+		while (t->top[1] + j <= t->bottom[1])
 		{
 			error(4);
-			if (m->m[mi + i][mj + j] == p->p2 || w > 1)
+			if ((m->m[mi + i][mj + j] == p->p2 && t->t[t->top[0] + i][t->top[1] + j] == '*') || w > 1)
 			{
+				error(5);
 				w = 0;
 				break;
 			}
-			error(5);
-			if (t->t[t->top[1] + i][t->top[0] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
-				w++;
-			j++;
 			error(6);
+			if (t->t[t->top[0] + i][t->top[1] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
+			{
+				error(7);
+				w++;
+			}
+			error(8);
+			j++;
 		}
 		i++;
-		error(7);
+		error(9);
 	}
 	if (w == 1)
 	{
-		error(8);
+		error(10);
 		p->pos[0] = mi - t->top[1];
 		p->pos[1] = mj - t->top[0];
 	}
@@ -56,16 +60,26 @@ void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 
 void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 {
-	while (mi + t->bottom[1] <= m->my)
+	int		flag;
+
+	flag = 0;
+	while (mi + t->bottom[0] <= m->my)
 	{
 		error(1);
 		mj = 0;
-		while (mj + t->bottom[0] <= m->mx)
+		while (mj + t->bottom[1] <= m->mx)
 		{
 			error(2);
 			placement2(m, t, p, mi, mj, i, j);
+			if (p->pos[0] != 0 && p->pos[1] != 0)
+			{
+				flag = 1;
+				break;
+			}
 			mj++;
 		}
+		if (flag)
+			break;
 		mi++;
 	}
 }
@@ -293,17 +307,26 @@ int		main(void)
 			store(&m, &p, &t, &line);
 			token_params(&t);
 			token_placement(&m, &t, &p);
-			ft_putnbr_fd(p.pos[0], 2);
-			ft_putnbr_fd(p.pos[1], 2);
 			fprintf(stderr, BLU "ENDING!\n" RESET);
 			fflush(stdout);
+			//write(1, "8 2\n", 4);
+			ft_putnbr_fd(p.pos[0], 2);
+			write(2, " ", 1);
+			ft_putnbr_fd(p.pos[1], 2);
+			ft_putchar_fd('\n', 2);
+			ft_putnbr_fd(p.pos[0], 1);
+			write(1, " ", 1);
+			ft_putnbr_fd(p.pos[1], 1);
+			ft_putchar('\n');
 		}
+		else
+			break;
 		//write(1, "8 2\n", 4);
-		if (m.m && t.t)
-		{
-			free(m.m);
-			free(t.t);
-		}
-		free(line);
+		// if (m.m && t.t)
+		// {
+		// 	free(m.m);
+		// 	free(t.t);
+		// }
+		// free(line);
 	}
 }
