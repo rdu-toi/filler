@@ -23,7 +23,9 @@ void	error(int x)
 void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 {
 	int		w;
+	int		flag;
 
+	flag = 0;
 	w = 0;
 	while (t->top[0] + i <= t->bottom[0])
 	{
@@ -31,34 +33,36 @@ void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 		while (t->top[1] + j <= t->bottom[1])
 		{
 			if ((m->m[mi + i][mj + j] == p->p2 && t->t[t->top[0] + i][t->top[1] + j] == '*') || w > 1)
+				flag = 1;
+			if (!flag && t->t[t->top[0] + i][t->top[1] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
 			{
-				w = 0;
-				break;
-			}
-			if (t->t[t->top[0] + i][t->top[1] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
-			{
+				fprintf(stderr, GRN "X, " RESET);
+				fflush(stdout);
 				w++;
 			}
 			j++;
 		}
+		if (flag)
+			break;
 		i++;
 	}
-	if (w == 1)
+	if (w == 1 && !flag)
 	{
-		p->pos[0] = mi - t->top[1];
-		p->pos[1] = mj - t->top[0];
+		p->pos[0] = mi - t->top[0];
+		p->pos[1] = mj - t->top[1];
 	}
 }
 
 void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 {
 	int		flag;
+	int		count = 1;
 
 	flag = 0;
-	while (mi + t->bottom[0] < m->my)
+	while (mi + t->bottom[0] - t->top[0] < m->my)
 	{
 		mj = 0;
-		while (mj + t->bottom[1] < m->mx)
+		while (mj + t->bottom[1] - t->top[1] < m->mx)
 		{
 			placement2(m, t, p, mi, mj, i, j);
 			if (p->pos[0] != 0 && p->pos[1] != 0)
@@ -66,8 +70,12 @@ void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 				flag = 1;
 				break;
 			}
+			fprintf(stderr, BLU "%d, " RESET, count++);
+			fflush(stdout);
 			mj++;
 		}
+		count = 1;
+		fprintf(stderr, "\n");
 		if (flag)
 			break;
 		mi++;
