@@ -17,7 +17,7 @@ void	error(int x)
 {
 	ft_putstr_fd("Error ", 2);
 	ft_putnbr_fd(x, 2);
-	ft_putchar_fd('\n', 2);
+	write(2, ", ", 2);
 }
 
 void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
@@ -27,32 +27,24 @@ void	placement2(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 	w = 0;
 	while (t->top[0] + i <= t->bottom[0])
 	{
-		error(3);
 		j = 0;
 		while (t->top[1] + j <= t->bottom[1])
 		{
-			error(4);
 			if ((m->m[mi + i][mj + j] == p->p2 && t->t[t->top[0] + i][t->top[1] + j] == '*') || w > 1)
 			{
-				error(5);
 				w = 0;
 				break;
 			}
-			error(6);
 			if (t->t[t->top[0] + i][t->top[1] + j] == '*' && m->m[mi + i][mj + j] == p->p1)
 			{
-				error(7);
 				w++;
 			}
-			error(8);
 			j++;
 		}
 		i++;
-		error(9);
 	}
 	if (w == 1)
 	{
-		error(10);
 		p->pos[0] = mi - t->top[1];
 		p->pos[1] = mj - t->top[0];
 	}
@@ -63,13 +55,11 @@ void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 	int		flag;
 
 	flag = 0;
-	while (mi + t->bottom[0] <= m->my)
+	while (mi + t->bottom[0] < m->my)
 	{
-		error(1);
 		mj = 0;
-		while (mj + t->bottom[1] <= m->mx)
+		while (mj + t->bottom[1] < m->mx)
 		{
-			error(2);
 			placement2(m, t, p, mi, mj, i, j);
 			if (p->pos[0] != 0 && p->pos[1] != 0)
 			{
@@ -83,62 +73,6 @@ void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j)
 		mi++;
 	}
 }
-
-/*void	placement(t_map *m, t_token *t, t_player *p, int mi, int mj, int ti, int tj, int i, int j)
-{
-	error(1);
-	int		w;
-	int		done;
-
-	done = 0;
-	w = 0;
-	while (mi < m->mx && !done)
-	{
-		error(2);
-		mj = 0;
-		while (mj < m->my && !done)
-		{
-			error(3);
-			ti = t->top[1];
-			i = 0;
-			while (ti <= t->bottom[1] && !done)
-			{
-				error(4);
-				j = 0;
-				tj = t->top[0];
-				while (tj <= t->bottom[0] && !done)
-				{
-					error(5);
-					if (mj + j >= m->my || mi + i >= m->mx)
-					{
-						w = 0;
-						break;
-					}
-					if (m->m[mi + i][mj + j] == p->p2)
-					{
-						w = 0;
-						break;
-					}
-					if (t->t[ti][tj] == '*' && m->m[mi + i][mj + j] == p->p1)
-						w++;
-					j++;
-					tj++;
-				}
-				if (w == 1)
-				{
-					p->pos[0] = (mj - j) - tj;
-					p->pos[1] = (mi - i) - ti;
-					done = 1;
-				}
-				i++;
-				ti++;
-			}
-			mj++;
-			w = 0;
-		}
-		mi++;
-	}
-}*/
 
 void	token_placement(t_map *m, t_token *t, t_player *p)
 {
@@ -322,11 +256,11 @@ int		main(void)
 		else
 			break;
 		//write(1, "8 2\n", 4);
-		// if (m.m && t.t)
-		// {
-		// 	free(m.m);
-		// 	free(t.t);
-		// }
-		// free(line);
+		if (m.m && t.t)
+		{
+			free(m.m);
+			free(t.t);
+		}
+		free(line);
 	}
 }
