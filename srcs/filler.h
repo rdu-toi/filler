@@ -13,6 +13,8 @@
 #ifndef FILLER_H
 # define FILLER_H
 # include "../libft/libft.h"
+
+//Colour for error checking...
 # define RED   "\x1B[31m"
 # define GRN   "\x1B[32m"
 # define YEL   "\x1B[33m"
@@ -44,5 +46,8 @@ typedef struct 	s_player
 	char		p2;
 	int			pos[2];
 }				t_player;
+
+void	find_params(t_token *t, int i, int j, int first);
+void	token_params(t_token *t);
 
 #endif
