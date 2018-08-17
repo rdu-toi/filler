@@ -49,5 +49,10 @@ typedef struct 	s_player
 
 void	find_params(t_token *t, int i, int j, int first);
 void	token_params(t_token *t);
+void	token_placement(t_map *m, t_token *t, t_player *p);
+void	placementO(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j);
+void	placementO1(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j);
+void	placementX(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j);
+void	placementX1(t_map *m, t_token *t, t_player *p, int mi, int mj, int i, int j);
 
 #endif
